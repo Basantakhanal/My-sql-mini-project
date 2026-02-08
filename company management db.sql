@@ -94,13 +94,13 @@ select emp_name as name from employees
 union
 select project_name as name from projects;
 select project_id as id from projects
-intersect
+intersect;
 select emp_id as id from employees;
 select employees.emp_name,employee_projects.assigned_date
 from employees
 join employee_projects on employees.emp_id=employee_projects.emp_id;
 SELECT emp_name FROM employees
-EXCEPT
+EXCEPT;
 SELECT employees.emp_name
 FROM employees
 JOIN employee_projects
@@ -124,6 +124,103 @@ INNER JOIN employees
 ON employee_projects.emp_id = employees.emp_id
 INNER JOIN projects
 ON employee_projects.project_id = projects.project_id;
+show tables;
+
+
+
+-- normalization show
+
+CREATE TABLE employees_unf (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    email VARCHAR(100),
+    contact VARCHAR(100),   
+    position VARCHAR(50),
+    salary DECIMAL(10,2),
+    dept_info VARCHAR(100)  
+);
+INSERT INTO employees_unf
+(emp_id, emp_name, email, contact, position, salary, dept_info)
+VALUES
+(989, "Suman Giri", "suman12@gmail.com", "9841202156,985212345", "Developer", 55000, "1-IT"),
+(101, "Ramesh Thapa", "ramesh@company.com", "9841000001,9745693120", "Manager", 60000, "1-IT");
+select * from employees_unf;
+-- CONVERTING INTO 1 NF
+CREATE TABLE employees_1nf (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    email VARCHAR(100),
+    contact1 VARCHAR(100), 
+    contact2 varchar(100),
+    position VARCHAR(50),
+    salary DECIMAL(10,2),
+    dept_info VARCHAR(100)  
+);
+drop table employees_1nf;
+select * from employees_1nf;
+INSERT INTO employees_1nf VALUES
+(989, "Suman Giri", "suman12@gmail.com", "9841202156","985212345", "Developer", 55000, 1),
+(101, "Ramesh Thapa", "ramesh@company.com", "9841000001","9745693120", "Manager", 60000, 1);
+
+
+-- CONVERTING INTO 2 NF
+CREATE TABLE employees_2nf (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    email VARCHAR(100),
+    position VARCHAR(50),
+    salary DECIMAL(10,2),
+    dept_id INT
+);
+drop table employees_2nf;
+drop table employee_contacts_2nf;
+CREATE TABLE employee_contacts_2nf (
+    emp_id INT,
+    contact1 VARCHAR(15),
+    contact2 varchar(15)
+);
+INSERT INTO employees_2nf VALUES
+(989, "Suman Giri", "suman12@gmail.com", "Developer", 55000, 1),
+(101, "Ramesh Thapa", "ramesh@company.com", "Manager", 60000, 1);
+
+INSERT INTO employee_contacts_2nf VALUES
+(989, "9841202156","985212345"),
+(101, "9841000001","9745693120");
+
+select*from employee_contacts_2nf;
+select * from employees_2nf;
+-- CONVERTING IN 3 NF
+CREATE TABLE departments_3nf (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(100)
+);
+INSERT INTO departments_3nf VALUES
+(1, "IT"),
+(2, "Finance"),
+(3, "HR");
+select * from  departments_3nf;
+select * from employees;
+-- transcation 
+START TRANSACTION;
+INSERT INTO employees(emp_id, emp_name, email, contact, position, salary, dept_id)
+VALUES (99, 'Amit Shrestha', 'amit@company.com', '9841111111', 'Developer', 50000, 2);
+COMMIT;
+START TRANSACTION;
+INSERT INTO employees(emp_id, emp_name, email, contact, position, salary, dept_id)
+VALUES (202, 'Wrong Person', 'wrong@company.com', '9800000000', 'Tester', 40000, 3);
+ROLLBACK;
+
+START TRANSACTION;
+UPDATE employees
+SET salary = salary + 500000
+WHERE emp_id = 103;
+COMMIT;
+
+
+
+
+
+
 
 
     
